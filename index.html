@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BE[X]YOND — Sky of Wishes for Cường Bạch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #050305;
+  --text: #f5f3f0;
+  --text-dim: rgba(245, 243, 240, 0.55);
+  --text-faint: rgba(245, 243, 240, 0.3);
+  --rose: #ff8a8a;
+  --rose-deep: #ff6c6c;
+  --rose-soft: #ffc6c6;
+  --silver: #d9d6d2;
+  --line: rgba(245, 243, 240, 0.08);
+  --display: 'Cinzel', serif;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: radial-gradient(ellipse at center, #0a0408 0%, #050305 60%, #000 100%);
+  color: var(--text);
+  font-family: var(--serif);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ===== Background twinkle stars ===== */
+.bg-stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.bg-star {
+  position: absolute;
+  width: 1.5px; height: 1.5px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #fff;
+  opacity: 0.4;
+  animation: twinkle 4s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 60;
+  padding: 24px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.topbar > * { pointer-events: auto; }
+.logo {
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  background: linear-gradient(180deg, #fff 0%, #d9d6d2 50%, #a8a4a0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.logo span { color: var(--rose); -webkit-text-fill-color: var(--rose); font-style: italic; }
+.counter {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.counter strong {
+  color: var(--rose-soft);
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  margin-right: 4px;
+}
+@media (max-width: 640px) {
+  .topbar { padding: 16px 20px; }
+  .counter { font-size: 10px; }
+}
+
+/* ===== INTRO OVERLAY ===== */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(10,4,8,0.85) 0%, rgba(0,0,0,0.95) 70%);
+  backdrop-filter: blur(6px);
+  transition: opacity .8s ease, visibility .8s ease;
+}
+.intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro-tag {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+.intro-tag::before, .intro-tag::after {
+  content: '—';
+  margin: 0 14px;
+  color: var(--rose);
+}
+.intro h1 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(38px, 8vw, 92px);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 20px;
+  background: linear-gradient(180deg, #fff 0%, #f0ecea 30%, #c8c4c0 70%, #888581 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 60px rgba(255,180,180,0.3);
+}
+.intro h1 .b {
+  background: linear-gradient(180deg, #ffb0b0 0%, #ff6c6c 60%, #c44545 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+}
+.intro p.sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(18px, 2.6vw, 28px);
+  color: var(--silver);
+  letter-spacing: 0.03em;
+  margin-bottom: 32px;
+}
+.intro p.desc {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.7vw, 18px);
+  color: var(--text-dim);
+  max-width: 540px;
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+.btn {
+  display: inline-block;
+  padding: 16px 42px;
+  border: 1px solid var(--rose);
+  background: rgba(255,108,108,0.08);
+  color: var(--rose-soft);
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .4s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,180,180,0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform .6s ease;
+}
+.btn:hover { background: rgba(255,108,108,0.18); color: #fff; }
+.btn:hover::before { transform: translateX(100%); }
+.btn-ghost {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--text-dim);
+  padding: 14px 32px;
+}
+.btn-ghost:hover { border-color: var(--rose); color: var(--rose-soft); background: rgba(255,108,108,0.05); }
+
+/* ===== SKY (main canvas) ===== */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  cursor: default;
+}
+/* Center glow on sky */
+.sky::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vmin; height: 70vmin;
+  background: radial-gradient(circle, rgba(255,108,108,0.08) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: skyPulse 6s ease-in-out infinite;
+}
+@keyframes skyPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ===== WISH STAR ===== */
+.wish-star {
+  position: absolute;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  --size: 14px;
+  width: var(--size);
+  height: var(--size);
+}
+.wish-star::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, rgba(255,180,180,0.45) 0%, transparent 65%);
+  border-radius: 50%;
+  transition: all .4s ease;
+}
+.wish-star .core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffc6c6 50%, #ff8a8a 100%);
+  box-shadow:
+    0 0 10px rgba(255,255,255,0.95),
+    0 0 24px rgba(255,180,180,0.7),
+    0 0 48px rgba(255,108,108,0.4);
+  animation: starPulse 3s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+.wish-star:hover { z-index: 30; }
+.wish-star:hover::before {
+  inset: -24px;
+  background: radial-gradient(circle, rgba(255,180,180,0.85) 0%, transparent 65%);
+}
+.wish-star:hover .core { transform: scale(1.5); }
+
+/* Just-added burst animation */
+@keyframes burst {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(3); }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+.wish-star.new {
+  animation: burst 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wish-star.new::after {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,180,180,0.6);
+  animation: ripple 1.8s ease-out forwards;
+}
+@keyframes ripple {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* ===== TOOLTIP ===== */
+.tooltip {
+  position: fixed;
+  z-index: 70;
+  pointer-events: none;
+  background: rgba(10,4,8,0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,140,140,0.3);
+  padding: 18px 22px;
+  max-width: 340px;
+  min-width: 240px;
+  transform: translate(-50%, calc(-100% - 24px));
+  opacity: 0;
+  transition: opacity .25s ease;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.7), 0 0 30px rgba(255,108,108,0.15);
+}
+.tooltip.show { opacity: 1; }
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(255,140,140,0.3);
+}
+.tooltip .tt-from {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 8px;
+}
+.tooltip .tt-name {
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.tooltip .tt-msg {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--silver);
+}
+.tooltip .tt-date {
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ===== ADD WISH BUTTON (sky view) ===== */
+.add-fab {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.add-fab .hint {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+@media (max-width: 640px) {
+  .add-fab { bottom: 24px; }
+  .add-fab .btn { padding: 14px 28px; font-size: 10px; }
+}
+
+/* ===== FORM MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .4s ease, visibility .4s ease;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+.modal {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(180deg, rgba(20,8,12,0.95) 0%, rgba(10,4,8,0.98) 100%);
+  border: 1px solid rgba(255,140,140,0.25);
+  padding: 48px 44px 40px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform .4s ease;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(255,108,108,0.1);
+}
+.modal-overlay.show .modal { transform: translateY(0); }
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  font-family: var(--serif);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.modal-close:hover { color: var(--rose); border-color: var(--rose); }
+.modal-tag {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 16px;
+}
+.modal-tag::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--rose);
+  vertical-align: middle;
+  margin-right: 12px;
+}
+.modal-title {
+  font-family: var(--display);
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, #fff 0%, #c0bcb8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.modal-title em {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--rose);
+}
+.modal-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.field {
+  margin-bottom: 24px;
+}
+.field label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 16px;
+  padding: 14px 16px;
+  outline: none;
+  transition: all .3s ease;
+  resize: none;
+}
+.field textarea {
+  min-height: 120px;
+  font-style: italic;
+  line-height: 1.6;
+}
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--rose);
+  background: rgba(255,108,108,0.03);
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.char-count {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-faint);
+}
+.char-count.warn { color: var(--rose); }
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.modal-actions .btn { flex: 1; }
+.modal-actions .btn-ghost { flex: 0 0 auto; }
+
+@media (max-width: 640px) {
+  .modal { padding: 36px 24px 28px; }
+}
+
+/* ===== SUCCESS TOAST ===== */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translate(-50%, -20px);
+  z-index: 90;
+  background: rgba(10,4,8,0.95);
+  border: 1px solid var(--rose);
+  padding: 14px 28px;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-soft);
+  opacity: 0;
+  visibility: hidden;
+  transition: all .5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 40px rgba(255,108,108,0.2);
+}
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 6;
+}
+.empty.hidden { display: none; }
+.empty p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-faint);
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+/* ===== BOTTOM CREDIT ===== */
+.credit {
+  position: fixed;
+  bottom: 18px;
+  right: 24px;
+  z-index: 50;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+@media (max-width: 640px) {
+  .credit { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background twinkle stars -->
+<div class="bg-stars" id="bgStars"></div>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="logo">BE<span>[X]</span>YOND</div>
+  <div class="counter"><strong id="counter">0</strong>LỜI NHẮN</div>
+</div>
+
+<!-- Sky canvas -->
+<div class="sky" id="sky">
+  <div class="empty" id="empty">
+    <p>Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên thắp lên một lời nhắn cho Cường.</p>
+  </div>
+</div>
+
+<!-- Tooltip (shared, repositioned on hover) -->
+<div class="tooltip" id="tooltip">
+  <div class="tt-from">From</div>
+  <div class="tt-name" id="ttName"></div>
+  <div class="tt-msg" id="ttMsg"></div>
+  <div class="tt-date" id="ttDate"></div>
+</div>
+
+<!-- Intro overlay -->
+<div class="intro" id="intro">
+  <div class="intro-tag">Cường Bạch · 26th Birthday · 2026</div>
+  <h1>BE<span class="b">[X]</span>YOND</h1>
+  <p class="sub">Sky of Wishes</p>
+  <p class="desc">Mỗi lời chúc bạn gửi tới Cường sẽ trở thành một ngôi sao trên bầu trời này — và sẽ ở đó mãi, cùng với hàng nghìn lời chúc khác từ fandom.</p>
+  <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+    <a class="btn" id="introOpenForm">Gửi lời nhắn</a>
+    <a class="btn btn-ghost" id="introViewSky">Xem bầu trời</a>
+  </div>
+</div>
+
+<!-- Add-wish floating button on sky -->
+<div class="add-fab" id="addFab" style="display:none;">
+  <div class="hint">Rê chuột vào sao để đọc lời nhắn</div>
+  <button class="btn" id="addBtn">+ Thắp một ngôi sao</button>
+</div>
+
+<!-- Form modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+    <div class="modal-tag">A wish for Cường</div>
+    <h2 class="modal-title">Thắp lên <em>một ngôi sao</em></h2>
+    <p class="modal-sub">Một dòng nhắn nhỏ của bạn sẽ trở thành một đốm sáng trong bầu trời chung — nơi mọi lời chúc cùng nhau toả sáng.</p>
+
+    <div class="field">
+      <label for="inpName">Tên của bạn / nickname (tuỳ chọn)</label>
+      <input type="text" id="inpName" placeholder="vd: Linh từ Hà Nội" maxlength="40" />
+    </div>
+
+    <div class="field">
+      <label for="inpMsg">Lời nhắn gửi Cường</label>
+      <textarea id="inpMsg" placeholder="Chúc Cường tuổi 26 tràn ngập ánh sáng và những bước đi vững vàng..." maxlength="280"></textarea>
+      <div class="char-count" id="charCount">280 ký tự còn lại</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalCancel">Để sau</button>
+      <button class="btn" id="modalSubmit">Thắp sao</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div class="toast" id="toast">✨ Ngôi sao của bạn đã được thắp lên</div>
+
+<!-- Credit -->
+<div class="credit">Whiterose × BE[X]YOND</div>
+
+<script>
+'use strict';
+
+// ============ Supabase config ============
+const SUPABASE_URL = 'https://pigwxqjxssjpaqymvrxf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpZ3d4cWp4c3NqcGFxeW12cnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NDIxMDcsImV4cCI6MjA5NDQxODEwN30.WmRSHObKgZdO0R58G7HuBkJwYvRAVMU2K9rS35xw96M';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============ State ============
+let wishes = [];
+
+// ============ DOM refs ============
+const $ = (id) => document.getElementById(id);
+const sky = $('sky');
+const counterEl = $('counter');
+const emptyEl = $('empty');
+const tooltip = $('tooltip');
+const ttName = $('ttName');
+const ttMsg = $('ttMsg');
+const ttDate = $('ttDate');
+const intro = $('intro');
+const addFab = $('addFab');
+const modal = $('modal');
+const inpName = $('inpName');
+const inpMsg = $('inpMsg');
+const charCount = $('charCount');
+const toast = $('toast');
+
+// ============ Render background twinkle stars ============
+(function renderBgStars() {
+  const container = $('bgStars');
+  const n = 100;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div');
+    s.className = 'bg-star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 4 + 's';
+    const size = 0.5 + Math.random() * 2;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    container.appendChild(s);
+  }
+})();
+
+// ============ Generate random position avoiding edges ============
+function generatePosition() {
+  // Avoid the very top area (where logo is) and very bottom (where button is)
+  // Avoid center heavy area too so wishes spread out
+  return {
+    x: 6 + Math.random() * 88,         // 6% - 94%
+    y: 14 + Math.random() * 72,        // 14% - 86%
+    size: 10 + Math.random() * 8,      // 10px - 18px
+  };
+}
+
+// ============ Render the sky (full re-render is fine for this scale) ============
+function renderSky(newId = null) {
+  // Clear existing wish-stars (keep bg-stars and empty)
+  sky.querySelectorAll('.wish-star').forEach(el => el.remove());
+
+  // Sort by timestamp so newer stars are on top
+  const sorted = [...wishes].sort((a, b) => a.timestamp - b.timestamp);
+
+  sorted.forEach(w => {
+    const el = document.createElement('div');
+    el.className = 'wish-star' + (w.id === newId ? ' new' : '');
+    el.style.left = w.x + '%';
+    el.style.top = w.y + '%';
+    el.style.setProperty('--size', w.size + 'px');
+    el.dataset.id = w.id;
+
+    const core = document.createElement('div');
+    core.className = 'core';
+    core.style.animationDelay = (Math.random() * 3) + 's';
+    el.appendChild(core);
+
+    // Hover events
+    el.addEventListener('mouseenter', (e) => showTooltip(w, el));
+    el.addEventListener('mouseleave', hideTooltip);
+    // Touch: tap to toggle
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (tooltip.dataset.activeId === w.id) {
+        hideTooltip();
+      } else {
+        showTooltip(w, el);
+      }
+    });
+
+    sky.appendChild(el);
+  });
+
+  counterEl.textContent = wishes.length;
+  if (wishes.length === 0) {
+    emptyEl.classList.remove('hidden');
+  } else {
+    emptyEl.classList.add('hidden');
+  }
+}
+
+// ============ Tooltip ============
+function showTooltip(wish, el) {
+  ttName.textContent = wish.name || 'Anonymous';
+  ttMsg.textContent = '"' + wish.message + '"';
+  ttDate.textContent = formatDate(wish.timestamp);
+  tooltip.dataset.activeId = wish.id;
+
+  // Position above the star
+  const rect = el.getBoundingClientRect();
+  const ttWidth = 320;
+  let left = rect.left + rect.width / 2;
+  // Keep within viewport
+  left = Math.max(ttWidth / 2 + 16, Math.min(window.innerWidth - ttWidth / 2 - 16, left));
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = rect.top + 'px';
+
+  // If too close to top, flip to below
+  const ttHeight = tooltip.offsetHeight || 180;
+  if (rect.top < ttHeight + 40) {
+    tooltip.style.top = (rect.bottom + 24) + 'px';
+    tooltip.style.transform = 'translate(-50%, 0)';
+    tooltip.classList.add('flipped');
+  } else {
+    tooltip.style.transform = 'translate(-50%, calc(-100% - 24px))';
+    tooltip.classList.remove('flipped');
+  }
+
+  tooltip.classList.add('show');
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('show');
+  delete tooltip.dataset.activeId;
+}
+
+// Hide tooltip on body click
+sky.addEventListener('click', (e) => {
+  if (!e.target.closest('.wish-star')) hideTooltip();
+});
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  return d.getDate().toString().padStart(2,'0') + '.'
+       + (d.getMonth()+1).toString().padStart(2,'0') + '.'
+       + d.getFullYear();
+}
+
+// ============ Modal ============
+function openModal() {
+  modal.classList.add('show');
+  setTimeout(() => inpMsg.focus(), 300);
+}
+function closeModal() {
+  modal.classList.remove('show');
+}
+
+inpMsg.addEventListener('input', () => {
+  const left = 280 - inpMsg.value.length;
+  charCount.textContent = left + ' ký tự còn lại';
+  charCount.classList.toggle('warn', left < 30);
+});
+
+// ============ Submit ============
+async function handleSubmit() {
+  const msg = inpMsg.value.trim();
+  if (!msg) {
+    inpMsg.focus();
+    inpMsg.style.borderColor = 'var(--rose)';
+    setTimeout(() => inpMsg.style.borderColor = '', 1500);
+    return;
+  }
+  const submitBtn = $('modalSubmit');
+  submitBtn.textContent = '...';
+  submitBtn.disabled = true;
+
+  const pos = generatePosition();
+  const { data, error } = await sb.from('wishes').insert({
+    name: inpName.value.trim().slice(0, 40) || null,
+    message: msg.slice(0, 280),
+    x: pos.x,
+    y: pos.y,
+    size: pos.size,
+  }).select().single();
+
+  submitBtn.textContent = 'Thắp sao';
+  submitBtn.disabled = false;
+
+  if (error) { console.error(error); alert('Lỗi khi gửi. Thử lại nhé!'); return; }
+
+  // Render ngay cho người vừa nhập (realtime cũng sẽ fire nhưng seenIds sẽ chặn duplicate)
+  addWish(normalize(data), true);
+
+  closeModal();
+  intro.classList.add('hidden');
+  addFab.style.display = 'flex';
+  showToast();
+  inpMsg.value = '';
+  inpName.value = '';
+  charCount.textContent = '280 ký tự còn lại';
+  charCount.classList.remove('warn');
+}
+
+function showToast() {
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============ Event wiring ============
+$('introOpenForm').addEventListener('click', () => {
+  intro.classList.add('hidden');
+  addFab.style.display = 'flex';
+  openModal();
+});
+$('introViewSky').addEventListener('click', () => {
+  intro.classList.add('hidden');
+  addFab.style.display = 'flex';
+});
+$('addBtn').addEventListener('click', openModal);
+$('modalClose').addEventListener('click', closeModal);
+$('modalCancel').addEventListener('click', closeModal);
+$('modalSubmit').addEventListener('click', handleSubmit);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeModal(); hideTooltip(); }
+  if ((e.key === 'Enter') && (e.ctrlKey || e.metaKey) && modal.classList.contains('show')) {
+    handleSubmit();
+  }
+});
+
+// ============ Normalize DB row ============
+function normalize(row) {
+  return {
+    id: row.id,
+    name: row.name || 'Anonymous',
+    message: row.message,
+    x: row.x,
+    y: row.y,
+    size: row.size,
+    timestamp: new Date(row.created_at).getTime(),
+  };
+}
+
+// Track IDs already rendered to avoid duplicates between insert response & realtime event
+const seenIds = new Set();
+
+function addWish(w, isNew = false) {
+  if (seenIds.has(w.id)) return;
+  seenIds.add(w.id);
+  wishes.push(w);
+  renderSky(isNew ? w.id : null);
+}
+
+// ============ Boot: load from Supabase + subscribe realtime ============
+(async function boot() {
+  emptyEl.querySelector('p').textContent = 'Đang tải bầu trời...';
+  emptyEl.classList.remove('hidden');
+
+  const { data, error } = await sb
+    .from('wishes')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Supabase load error:', error);
+    emptyEl.querySelector('p').textContent = 'Không thể kết nối. Vui lòng thử lại.';
+    return;
+  }
+
+  wishes = data.map(normalize);
+  wishes.forEach(w => seenIds.add(w.id));
+  renderSky();
+
+  if (wishes.length === 0) {
+    emptyEl.querySelector('p').innerHTML = 'Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên thắp lên một lời nhắn cho Cường.';
+  }
+
+  // Realtime: nhận wish mới từ tất cả mọi người (kể cả chính mình nếu chưa seen)
+  sb.channel('wishes-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'wishes' }, payload => {
+      addWish(normalize(payload.new), true);
+    })
+    .subscribe();
+})();
+
+window.addEventListener('resize', () => hideTooltip());
+</script>
+
+</body>
+</html>
