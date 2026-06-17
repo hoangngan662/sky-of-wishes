@@ -6,7 +6,7 @@
 <title>BE[X]YOND — Sky of Wishes for Cường Bạch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
@@ -25,12 +25,16 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { min-height: 100%; }
 body {
-  background: radial-gradient(ellipse at center, #0a0408 0%, #050305 60%, #000 100%);
+  background:
+    radial-gradient(ellipse at center, rgba(10,4,8,0.2) 0%, rgba(5,3,5,0.58) 58%, rgba(0,0,0,0.88) 100%),
+    url("assests/galaxy.jpg") center / cover fixed no-repeat,
+    #000;
   color: var(--text);
   font-family: var(--serif);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
 
@@ -47,7 +51,56 @@ body::before {
 }
 
 /* ===== Background twinkle stars ===== */
-.bg-stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.bg-stars { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.meteor-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.meteor {
+  position: absolute;
+  width: 240px;
+  height: 1px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: rotate(-27deg);
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 18%, rgba(255,232,232,0.52) 72%, rgba(255,255,255,0.9) 100%);
+  box-shadow: 0 0 5px rgba(255,220,220,0.34);
+  animation: meteor 6.6s linear infinite;
+}
+.m1 { top: 150px; left: 4%; animation-delay: .2s; width: 320px; }
+.m2 { top: 235px; left: 58%; animation-delay: 1.7s; width: 280px; animation-duration: 7.4s; }
+.m3 { top: 88px; left: 38%; animation-delay: 3.1s; width: 210px; animation-duration: 6.1s; }
+.m4 { top: 420px; left: 22%; animation-delay: 4.8s; width: 300px; animation-duration: 8s; }
+@keyframes meteor {
+  0% {
+    opacity: 0;
+    transform: translate3d(240px,-140px,0) rotate(-27deg);
+  }
+  7% { opacity: .7; }
+  28% { opacity: .5; }
+  100% {
+    opacity: 0;
+    transform: translate3d(-840px,420px,0) rotate(-27deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .meteor { display: none; }
+}
+@media (max-width: 640px) {
+  .meteor-sky .meteor { width: 110px; }
+}
+.music-frame {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  left: -10px;
+  top: -10px;
+  opacity: 0;
+  pointer-events: none;
+}
 .bg-star {
   position: absolute;
   width: 1.5px; height: 1.5px;
@@ -72,19 +125,27 @@ body::before {
   justify-content: space-between;
   align-items: center;
   pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.98) 0%, rgba(5,3,5,0.94) 58%, rgba(5,3,5,0.82) 100%);
+  backdrop-filter: blur(16px);
 }
 .topbar > * { pointer-events: auto; }
 .logo {
-  font-family: var(--display);
-  font-size: 18px;
-  letter-spacing: 0.2em;
-  font-weight: 500;
-  background: linear-gradient(180deg, #fff 0%, #d9d6d2 50%, #a8a4a0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  width: 140px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
-.logo span { color: var(--rose); -webkit-text-fill-color: var(--rose); font-style: italic; }
+.logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.logo:hover { opacity: 0.82; }
 .counter {
   font-family: var(--sans);
   font-size: 11px;
@@ -107,20 +168,35 @@ body::before {
 
 /* ===== INTRO OVERLAY ===== */
 .intro {
-  position: fixed;
-  inset: 0;
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
   z-index: 40;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  padding: 72px 24px 80px;
   text-align: center;
   background: radial-gradient(ellipse at center, rgba(10,4,8,0.85) 0%, rgba(0,0,0,0.95) 70%);
   backdrop-filter: blur(6px);
   transition: opacity .8s ease, visibility .8s ease;
 }
-.intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro.hidden { display: none; opacity: 0; visibility: hidden; pointer-events: none; }
+.intro-logo {
+  display: block;
+  width: min(640px, calc(100vw - 48px));
+  max-height: 21vh;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+.intro-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 .intro-tag {
   font-family: var(--sans);
   font-size: 11px;
@@ -160,7 +236,7 @@ body::before {
   font-size: clamp(18px, 2.6vw, 28px);
   color: var(--silver);
   letter-spacing: 0.03em;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 .intro p.desc {
   font-family: var(--serif);
@@ -168,7 +244,7 @@ body::before {
   color: var(--text-dim);
   max-width: 540px;
   line-height: 1.75;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 .btn {
   display: inline-block;
@@ -235,15 +311,15 @@ body::before {
   cursor: pointer;
   transform: translate(-50%, -50%);
   z-index: 5;
-  --size: 14px;
+  --size: 5px;
   width: var(--size);
   height: var(--size);
 }
 .wish-star::before {
   content: '';
   position: absolute;
-  inset: -8px;
-  background: radial-gradient(circle, rgba(255,180,180,0.45) 0%, transparent 65%);
+  inset: -4px;
+  background: radial-gradient(circle, rgba(255,180,180,0.26) 0%, transparent 68%);
   border-radius: 50%;
   transition: all .4s ease;
 }
@@ -253,9 +329,9 @@ body::before {
   border-radius: 50%;
   background: radial-gradient(circle, #fff 0%, #ffc6c6 50%, #ff8a8a 100%);
   box-shadow:
-    0 0 10px rgba(255,255,255,0.95),
-    0 0 24px rgba(255,180,180,0.7),
-    0 0 48px rgba(255,108,108,0.4);
+    0 0 4px rgba(255,255,255,0.9),
+    0 0 10px rgba(255,180,180,0.48),
+    0 0 18px rgba(255,108,108,0.2);
   animation: starPulse 3s ease-in-out infinite;
 }
 @keyframes starPulse {
@@ -264,10 +340,10 @@ body::before {
 }
 .wish-star:hover { z-index: 30; }
 .wish-star:hover::before {
-  inset: -24px;
-  background: radial-gradient(circle, rgba(255,180,180,0.85) 0%, transparent 65%);
+  inset: -16px;
+  background: radial-gradient(circle, rgba(255,180,180,0.68) 0%, transparent 65%);
 }
-.wish-star:hover .core { transform: scale(1.5); }
+.wish-star:hover .core { transform: scale(1.35); }
 
 /* Just-added burst animation */
 @keyframes burst {
@@ -282,7 +358,7 @@ body::before {
 .wish-star.new::after {
   content: '';
   position: absolute;
-  inset: -40px;
+  inset: -28px;
   border-radius: 50%;
   border: 1px solid rgba(255,180,180,0.6);
   animation: ripple 1.8s ease-out forwards;
@@ -435,20 +511,17 @@ body::before {
   margin-right: 12px;
 }
 .modal-title {
-  font-family: var(--display);
-  font-size: clamp(22px, 3vw, 30px);
-  letter-spacing: 0.04em;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(34px, 5vw, 48px);
+  letter-spacing: 0;
   line-height: 1.2;
   margin-bottom: 12px;
   background: linear-gradient(180deg, #fff 0%, #c0bcb8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-.modal-title em {
-  font-family: var(--serif);
-  font-style: italic;
-  color: var(--rose);
 }
 .modal-sub {
   font-family: var(--serif);
@@ -511,15 +584,40 @@ body::before {
 .char-count.warn { color: var(--rose); }
 
 .modal-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
   margin-top: 8px;
 }
-.modal-actions .btn { flex: 1; }
-.modal-actions .btn-ghost { flex: 0 0 auto; }
+.modal-actions .btn {
+  width: 100%;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
 
 @media (max-width: 640px) {
   .modal { padding: 36px 24px 28px; }
+  .modal-actions {
+    gap: 10px;
+  }
+  .modal-actions .btn {
+    min-height: 54px;
+    padding: 13px 12px;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+  }
+}
+
+@media (max-width: 380px) {
+  .modal-actions .btn {
+    padding-inline: 8px;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
 }
 
 /* ===== SUCCESS TOAST ===== */
@@ -580,7 +678,134 @@ body::before {
   color: var(--text-faint);
 }
 @media (max-width: 640px) {
-  .credit { display: none; }
+  .credit {
+    right: 14px;
+    bottom: 12px;
+    max-width: calc(100vw - 28px);
+    font-size: 8px;
+    letter-spacing: 0.28em;
+  }
+}
+/* ===== COUNTDOWN (normal flow, centered) ===== */
+.countdown-wrap {
+  width: min(560px, calc(100vw - 48px));
+  aspect-ratio: 823 / 214;
+  max-width: calc(100vw - 48px);
+  margin: 0 auto;
+  padding: 54px 48px 24px;
+  background: url("assests/countdown.png") center / 100% 100% no-repeat;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.intro .countdown-wrap {
+  margin-top: 18px;
+}
+.countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+.time-box {
+  text-align: center;
+  min-width: 66px;
+}
+.time-box div {
+  font-family: var(--serif);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--text);
+  font-weight: 500;
+  text-shadow:
+    0 0 12px rgba(255,255,255,.15),
+    0 0 24px rgba(255,120,160,.12);
+}
+.time-box small {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--silver);
+}
+.divider {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,.45), transparent);
+  opacity: .5;
+}
+@media (max-width: 640px) {
+  .intro {
+    padding: 86px 16px 56px;
+  }
+  .intro-logo {
+    width: min(400px, calc(100vw - 32px));
+    max-height: 18vh;
+  }
+  .intro p.sub {
+    margin-bottom: 12px;
+  }
+  .intro p.desc {
+    max-width: min(560px, calc(100vw - 32px));
+    margin-bottom: 18px;
+  }
+  .intro-actions {
+    width: 100%;
+  }
+  .intro-actions .btn {
+    min-width: min(300px, calc(100vw - 48px));
+  }
+  .countdown-wrap {
+    width: min(360px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    padding: 14px 26px 18px;
+  }
+  .countdown {
+    gap: 8px;
+  }
+  .time-box {
+    min-width: 46px;
+  }
+  .time-box div {
+    font-size: 26px;
+  }
+  .time-box small {
+    font-size: 7px;
+    letter-spacing: 1.6px;
+  }
+  .divider {
+    height: 26px;
+  }
+}
+
+@media (max-height: 820px) {
+  .intro {
+    padding-top: 82px;
+    padding-bottom: 44px;
+  }
+  .intro-logo {
+    max-height: 18vh;
+    margin-bottom: 8px;
+  }
+  .intro p.sub {
+    margin-bottom: 10px;
+  }
+  .intro p.desc {
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .intro .countdown-wrap {
+    margin-top: 14px;
+  }
+}
+
+/* When intro overlay is visible, lift countdown up by the same gap as between the buttons and the description */
+.intro:not(.hidden) ~ .countdown-wrap {
+  bottom: calc(18px + 24px);
+  transition: bottom .36s ease;
 }
 </style>
 </head>
@@ -588,17 +813,25 @@ body::before {
 
 <!-- Background twinkle stars -->
 <div class="bg-stars" id="bgStars"></div>
+<div class="meteor-sky" id="meteorSky" aria-hidden="true">
+  <span class="meteor m1"></span>
+  <span class="meteor m2"></span>
+  <span class="meteor m3"></span>
+  <span class="meteor m4"></span>
+</div>
+<iframe id="musicPlayer" class="music-frame" aria-hidden="true" frameborder="0" allow="autoplay"></iframe>
+<audio id="bgMusic" src="assests/Ng%C3%A2n%20nga.m4a" preload="auto" autoplay loop></audio>
 
 <!-- Top bar -->
 <div class="topbar">
-  <div class="logo">BE<span>[X]</span>YOND</div>
+  <button class="logo" id="homeLogo" type="button" aria-label="Về trang chủ"><img src="assests/h3t.png" alt="H3T.ONLYFORCB"></button>
   <div class="counter"><strong id="counter">0</strong>LỜI NHẮN</div>
 </div>
 
 <!-- Sky canvas -->
 <div class="sky" id="sky">
   <div class="empty" id="empty">
-    <p>Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên thắp lên một lời nhắn cho Cường.</p>
+    <p>Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên gửi lời nhắn cho Cường.</p>
   </div>
 </div>
 
@@ -612,20 +845,43 @@ body::before {
 
 <!-- Intro overlay -->
 <div class="intro" id="intro">
-  <div class="intro-tag">Cường Bạch · 26th Birthday · 2026</div>
-  <h1>BE<span class="b">[X]</span>YOND</h1>
+  <img class="intro-logo" src="assests/LOGO-NOTAGLINE.png" alt="BE[X]YOND Logo">
   <p class="sub">Sky of Wishes</p>
   <p class="desc">Mỗi lời chúc bạn gửi tới Cường sẽ trở thành một ngôi sao trên bầu trời này — và sẽ ở đó mãi, cùng với hàng nghìn lời chúc khác từ fandom.</p>
-  <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+  <div class="intro-actions">
     <a class="btn" id="introOpenForm">Gửi lời nhắn</a>
     <a class="btn btn-ghost" id="introViewSky">Xem bầu trời</a>
+  </div>
+  <!-- Countdown inside intro -->
+  <div class="countdown-wrap" id="countdownWrap" aria-hidden="false">
+    <div class="countdown" id="countdown">
+      <div class="time-box">
+        <div id="days">00</div>
+        <small>DAYS</small>
+      </div>
+      <div class="divider"></div>
+      <div class="time-box">
+        <div id="hours">00</div>
+        <small>HOURS</small>
+      </div>
+      <div class="divider"></div>
+      <div class="time-box">
+        <div id="minutes">00</div>
+        <small>MINUTES</small>
+      </div>
+      <div class="divider"></div>
+      <div class="time-box">
+        <div id="seconds">00</div>
+        <small>SECONDS</small>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- Add-wish floating button on sky -->
 <div class="add-fab" id="addFab" style="display:none;">
   <div class="hint">Rê chuột vào sao để đọc lời nhắn</div>
-  <button class="btn" id="addBtn">+ Thắp một ngôi sao</button>
+  <button class="btn" id="addBtn">+ Gửi một ngôi sao</button>
 </div>
 
 <!-- Form modal -->
@@ -633,8 +889,8 @@ body::before {
   <div class="modal">
     <button class="modal-close" id="modalClose" aria-label="Close">×</button>
     <div class="modal-tag">A wish for Cường</div>
-    <h2 class="modal-title">Thắp lên <em>một ngôi sao</em></h2>
-    <p class="modal-sub">Một dòng nhắn nhỏ của bạn sẽ trở thành một đốm sáng trong bầu trời chung — nơi mọi lời chúc cùng nhau toả sáng.</p>
+    <h2 class="modal-title">Gửi một ngôi sao</h2>
+    <p class="modal-sub">Một lời nhắn của bạn sẽ trở thành một đốm sáng trong bầu trời chung — nơi mọi lời chúc cùng nhau toả sáng.</p>
 
     <div class="field">
       <label for="inpName">Tên của bạn / nickname (tuỳ chọn)</label>
@@ -648,14 +904,14 @@ body::before {
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-ghost" id="modalCancel">Để sau</button>
-      <button class="btn" id="modalSubmit">Thắp sao</button>
+      <button class="btn btn-ghost" id="modalCancel">Xem bầu trời</button>
+      <button class="btn" id="modalSubmit">Gửi lời nhắn</button>
     </div>
   </div>
 </div>
 
 <!-- Success toast -->
-<div class="toast" id="toast">✨ Ngôi sao của bạn đã được thắp lên</div>
+<div class="toast" id="toast">✨ Ngôi sao của bạn đã được gửi</div>
 
 <!-- Credit -->
 <div class="credit">Whiterose × BE[X]YOND</div>
@@ -687,6 +943,37 @@ const inpName = $('inpName');
 const inpMsg = $('inpMsg');
 const charCount = $('charCount');
 const toast = $('toast');
+const bgMusic = $('bgMusic');
+const musicPlayer = $('musicPlayer');
+let musicFrameLoaded = false;
+
+function loadMusicFrame() {
+  if (!musicPlayer || musicFrameLoaded) return;
+  if (bgMusic) bgMusic.pause();
+  musicFrameLoaded = true;
+  musicPlayer.srcdoc = '<!doctype html><html><body style="margin:0;overflow:hidden;background:transparent;"><audio id="music" src="assests/Ng%C3%A2n%20nga.m4a" autoplay loop playsinline></audio><script>const music=document.getElementById("music");music.volume=0.45;function play(){music.play().catch(function(){});}play();window.addEventListener("load",play);setInterval(play,1500);<\/script></body></html>';
+}
+
+function playBackgroundMusic() {
+  if (musicFrameLoaded) return;
+
+  if (!bgMusic) {
+    loadMusicFrame();
+    return;
+  }
+
+  bgMusic.volume = 0.45;
+  if (bgMusic.paused) {
+    bgMusic.play().catch(() => {
+      if (bgMusic.paused) loadMusicFrame();
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', playBackgroundMusic);
+window.addEventListener('load', playBackgroundMusic);
+window.addEventListener('pageshow', playBackgroundMusic);
+setTimeout(playBackgroundMusic, 300);
 
 // ============ Render background twinkle stars ============
 (function renderBgStars() {
@@ -705,15 +992,106 @@ const toast = $('toast');
   }
 })();
 
-// ============ Generate random position avoiding edges ============
-function generatePosition() {
-  // Avoid the very top area (where logo is) and very bottom (where button is)
-  // Avoid center heavy area too so wishes spread out
+// ============ Generate random position avoiding edges and crowded areas ============
+function starDistance(a, b) {
+  const rect = sky.getBoundingClientRect();
+  const width = rect.width || window.innerWidth || 1;
+  const height = rect.height || window.innerHeight || 1;
+  const dx = ((a.x - b.x) / 100) * width;
+  const dy = ((a.y - b.y) / 100) * height;
+  return Math.hypot(dx, dy);
+}
+
+function isPositionOpen(candidate, minDistance) {
+  return wishes.every(w => {
+    const glowSpace = ((candidate.size || 9) + (w.size || 9)) / 2;
+    return starDistance(candidate, w) >= minDistance + glowSpace;
+  });
+}
+
+const SKY_BOUNDS = {
+  minX: 6,
+  maxX: 94,
+  minY: 14,
+  maxY: 86,
+};
+
+function randomStarSize() {
+  return 4 + Math.random() * 6; // 4px - 10px
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getSkyGrid() {
+  return window.innerWidth < 640
+    ? { cols: 8, rows: 10 }
+    : { cols: 14, rows: 9 };
+}
+
+function getCellForPoint(point, grid) {
+  const col = clamp(
+    Math.floor(((point.x - SKY_BOUNDS.minX) / (SKY_BOUNDS.maxX - SKY_BOUNDS.minX)) * grid.cols),
+    0,
+    grid.cols - 1
+  );
+  const row = clamp(
+    Math.floor(((point.y - SKY_BOUNDS.minY) / (SKY_BOUNDS.maxY - SKY_BOUNDS.minY)) * grid.rows),
+    0,
+    grid.rows - 1
+  );
+  return { col, row, index: row * grid.cols + col };
+}
+
+function buildSkyCells(grid) {
+  const cells = Array.from({ length: grid.cols * grid.rows }, (_, index) => ({
+    index,
+    count: 0,
+    col: index % grid.cols,
+    row: Math.floor(index / grid.cols),
+  }));
+
+  wishes.forEach(w => {
+    const cell = getCellForPoint(w, grid);
+    cells[cell.index].count++;
+  });
+
+  return cells.sort((a, b) => a.count - b.count || Math.random() - 0.5);
+}
+
+function randomPointInCell(cell, grid) {
+  const cellW = (SKY_BOUNDS.maxX - SKY_BOUNDS.minX) / grid.cols;
+  const cellH = (SKY_BOUNDS.maxY - SKY_BOUNDS.minY) / grid.rows;
+  const padX = cellW * 0.12;
+  const padY = cellH * 0.12;
+
   return {
-    x: 6 + Math.random() * 88,         // 6% - 94%
-    y: 14 + Math.random() * 72,        // 14% - 86%
-    size: 10 + Math.random() * 8,      // 10px - 18px
+    x: SKY_BOUNDS.minX + cell.col * cellW + padX + Math.random() * Math.max(0.01, cellW - padX * 2),
+    y: SKY_BOUNDS.minY + cell.row * cellH + padY + Math.random() * Math.max(0.01, cellH - padY * 2),
+    size: randomStarSize(),
   };
+}
+
+function generatePosition() {
+  // Avoid the top bar and bottom button area, then prefer the least crowded cells.
+  const grid = getSkyGrid();
+  const cells = buildSkyCells(grid);
+  const baseMinDistance = window.innerWidth < 640 ? 18 : 24;
+
+  for (let attempt = 0; attempt < 260; attempt++) {
+    const allowedCrowding = Math.floor(attempt / 70);
+    const bestCount = cells[0]?.count || 0;
+    const candidateCells = cells.filter(cell => cell.count <= bestCount + allowedCrowding);
+    const pool = candidateCells.length ? candidateCells : cells.slice(0, 12);
+    const cell = pool[Math.floor(Math.random() * pool.length)];
+    const candidate = randomPointInCell(cell, grid);
+    const relaxedDistance = baseMinDistance * Math.max(0.42, 1 - attempt / 260);
+
+    if (isPositionOpen(candidate, relaxedDistance)) return candidate;
+  }
+
+  return randomPointInCell(cells[0], grid);
 }
 
 // ============ Render the sky (full re-render is fine for this scale) ============
@@ -729,7 +1107,7 @@ function renderSky(newId = null) {
     el.className = 'wish-star' + (w.id === newId ? ' new' : '');
     el.style.left = w.x + '%';
     el.style.top = w.y + '%';
-    el.style.setProperty('--size', w.size + 'px');
+    el.style.setProperty('--size', clamp(Number(w.size) || 6, 4, 10) + 'px');
     el.dataset.id = w.id;
 
     const core = document.createElement('div');
@@ -845,7 +1223,7 @@ async function handleSubmit() {
     size: pos.size,
   }).select().single();
 
-  submitBtn.textContent = 'Thắp sao';
+  submitBtn.textContent = 'Gửi lời nhắn';
   submitBtn.disabled = false;
 
   if (error) { console.error(error); alert('Lỗi khi gửi. Thử lại nhé!'); return; }
@@ -869,13 +1247,24 @@ function showToast() {
   showToast._t = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function showHome() {
+  closeModal();
+  hideTooltip();
+  intro.classList.remove('hidden');
+  addFab.style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // ============ Event wiring ============
+$('homeLogo').addEventListener('click', showHome);
 $('introOpenForm').addEventListener('click', () => {
+  playBackgroundMusic();
   intro.classList.add('hidden');
   addFab.style.display = 'flex';
   openModal();
 });
 $('introViewSky').addEventListener('click', () => {
+  playBackgroundMusic();
   intro.classList.add('hidden');
   addFab.style.display = 'flex';
 });
@@ -935,7 +1324,7 @@ function addWish(w, isNew = false) {
   renderSky();
 
   if (wishes.length === 0) {
-    emptyEl.querySelector('p').innerHTML = 'Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên thắp lên một lời nhắn cho Cường.';
+    emptyEl.querySelector('p').innerHTML = 'Chưa có ngôi sao nào trên bầu trời.<br>Hãy là người đầu tiên gửi lời nhắn cho Cường.';
   }
 
   // Realtime: nhận wish mới từ tất cả mọi người (kể cả chính mình nếu chưa seen)
@@ -947,6 +1336,43 @@ function addWish(w, isNew = false) {
 })();
 
 window.addEventListener('resize', () => hideTooltip());
+
+// ===== Countdown to 2026-06-23 00:00 (local time) =====
+(function initCountdown(){
+  const elDays = document.getElementById('days');
+  const elHours = document.getElementById('hours');
+  const elMinutes = document.getElementById('minutes');
+  const elSeconds = document.getElementById('seconds');
+
+  // Target: 23 June 2026 00:00 local
+  const target = new Date(2026, 5, 23, 0, 0, 0, 0).getTime();
+
+  function update() {
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / 86400000);
+    diff -= days * 86400000;
+    const hours = Math.floor(diff / 3600000);
+    diff -= hours * 3600000;
+    const minutes = Math.floor(diff / 60000);
+    diff -= minutes * 60000;
+    const seconds = Math.floor(diff / 1000);
+
+    elDays.textContent = String(days).padStart(2, '0');
+    elHours.textContent = String(hours).padStart(2, '0');
+    elMinutes.textContent = String(minutes).padStart(2, '0');
+    elSeconds.textContent = String(seconds).padStart(2, '0');
+
+    if (target - now <= 0) {
+      // Optionally show expired state
+      clearInterval(update._t);
+    }
+  }
+
+  update();
+  update._t = setInterval(update, 1000);
+})();
 </script>
 
 </body>
